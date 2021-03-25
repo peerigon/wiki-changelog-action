@@ -11,7 +11,7 @@ async function run(): Promise<void> {
 
     if (payload !== undefined) {
       core.debug(`Payload: ${JSON.stringify(payload, null, 4)}`);
-      const commitsUrl = payload.repository?.commits_url;
+      const commitsUrl = payload.repository?.commits_url.replace("{/sha}", "");
       core.debug(`commits url ${commitsUrl}`);
 
       if (commitsUrl !== undefined) {
