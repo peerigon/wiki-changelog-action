@@ -22,4 +22,4 @@ jobs:
       - uses: ./
         with:
           mattermost-hook-url: ${{ secrets.MATTERMOST_HOOK_URL }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
