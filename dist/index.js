@@ -48,19 +48,23 @@ function run() {
         try {
             const hookUrl = core.getInput("mattermost-hook-url");
             const repoToken = core.getInput("repo-token");
+            const headers = { Authorization: `Bearer ${repoToken}` };
             core.debug(`HookUrl: ${hookUrl}`);
             const { payload } = github.context;
             if (payload !== undefined) {
                 const commitsUrl = (_a = payload.repository) === null || _a === void 0 ? void 0 : _a.commits_url.replace("{/sha}", "");
                 const compareUrlRaw = (_b = payload.repository) === null || _b === void 0 ? void 0 : _b.compare_url;
                 const { data: commits } = yield axios_1.default.get(commitsUrl, {
-                    headers: { Authorization: `Bearer ${repoToken}` },
+                    headers,
                 });
                 const lastTwoCommits = commits.slice(0, 2);
                 const compareUrl = compareUrlRaw
                     .replace("{base}", lastTwoCommits[0].sha)
                     .replace("{head}", lastTwoCommits[1].sha);
-                core.debug(`Compare url: ${compareUrl}`);
+                const { data: compareData } = yield axios_1.default.get(compareUrl, {
+                    headers,
+                });
+                core.debug(`Compare url: ${compareData.diff_url}`);
             }
             // axios.post(hookUrl, {text: "test from action"});
         }
