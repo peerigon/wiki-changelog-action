@@ -47,6 +47,7 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const hookUrl = core.getInput("mattermost-hook-url");
+            const repoToken = core.getInput("repo-token");
             core.debug(`HookUrl: ${hookUrl}`);
             const { payload } = github.context;
             if (payload !== undefined) {
@@ -54,7 +55,9 @@ function run() {
                 const commitsUrl = (_a = payload.repository) === null || _a === void 0 ? void 0 : _a.commits_url.replace("{/sha}", "");
                 core.debug(`commits url ${commitsUrl}`);
                 if (commitsUrl !== undefined) {
-                    const commits = yield axios_1.default.get(commitsUrl);
+                    const commits = yield axios_1.default.get(commitsUrl, {
+                        headers: { authorization: `Bearer ${repoToken}` },
+                    });
                     core.debug(`commits: ${JSON.stringify(commits, null, 4)}`);
                 }
             }

@@ -1,10 +1,10 @@
-name: 'build-test'
+name: "build-test"
 on: # rebuild any PRs and main branch changes
   pull_request:
   push:
     branches:
       - main
-      - 'releases/*'
+      - "releases/*"
 
 jobs:
   build: # make sure build/ci work properly
@@ -21,4 +21,5 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./
         with:
-          mattermost-hook-url: 'https://mattermost.peerigon.com/hooks/ku898bcptin7ux4ktgk1o5d6sy'
+          mattermost-hook-url: "https://mattermost.peerigon.com/hooks/ku898bcptin7ux4ktgk1o5d6sy"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
