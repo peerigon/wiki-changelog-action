@@ -6,6 +6,7 @@ async function run(): Promise<void> {
   try {
     const hookUrl = core.getInput("mattermost-hook-url");
     const repoToken = core.getInput("repo-token");
+    const headers = {Authorization: `Bearer ${repoToken}`};
     core.debug(`HookUrl: ${hookUrl}`);
 
     const {payload} = github.context;
@@ -15,7 +16,7 @@ async function run(): Promise<void> {
       const compareUrlRaw = payload.repository?.compare_url;
 
       const {data: commits} = await axios.get<Array<any>>(commitsUrl, {
-        headers: {Authorization: `Bearer ${repoToken}`},
+        headers,
       });
 
       const lastTwoCommits = commits.slice(0, 2);
@@ -24,7 +25,11 @@ async function run(): Promise<void> {
         .replace("{base}", lastTwoCommits[0].sha)
         .replace("{head}", lastTwoCommits[1].sha);
 
-      core.debug(`Compare url: ${compareUrl}`);
+      const {data: compareData} = await axios.get(compareUrl, {
+        headers,
+      });
+
+      core.debug(`Compare url: ${compareData.diff_url}`);
     }
 
     // axios.post(hookUrl, {text: "test from action"});
