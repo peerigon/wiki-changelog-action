@@ -49,23 +49,28 @@ function run() {
             const hookUrl = core.getInput("mattermost-hook-url");
             const repoToken = core.getInput("repo-token");
             const headers = { Authorization: `Bearer ${repoToken}` };
-            core.debug(`HookUrl: ${hookUrl}`);
             const { payload } = github.context;
-            if (payload !== undefined) {
-                const commitsUrl = (_a = payload.repository) === null || _a === void 0 ? void 0 : _a.commits_url.replace("{/sha}", "?per_page=3");
-                const compareUrlRaw = (_b = payload.repository) === null || _b === void 0 ? void 0 : _b.compare_url;
-                const { data: commits } = yield axios_1.default.get(commitsUrl, {
-                    headers,
-                });
+            const compareUrlRaw = (_a = payload.repository) === null || _a === void 0 ? void 0 : _a.compare_url;
+            const commitsUrl = (_b = payload.repository) === null || _b === void 0 ? void 0 : _b.commits_url.replace("{/sha}", "?per_page=2");
+            const { data: commits } = yield axios_1.default.get(commitsUrl, {
+                headers,
+            });
+            if (commits.length >= 2) {
                 const compareUrl = compareUrlRaw
                     .replace("{base}", commits[1].sha)
                     .replace("{head}", commits[0].sha);
                 const { data: compareData } = yield axios_1.default.get(compareUrl, {
                     headers,
                 });
-                core.debug(`Compare url: ${compareData.html_url}`);
+                if (Array.isArray(payload.pages)) {
+                    const pagesUpdated = payload.pages.map(page => {
+                        return `[${page.title}](${page.html_url}) was updated by ${page.sender.login}! see the [diff](${compareData.html_url})`;
+                    });
+                    axios_1.default.post(hookUrl, {
+                        text: `The Wiki was updated :tada: \n${pagesUpdated.join("\n*")}`,
+                    });
+                }
             }
-            // axios.post(hookUrl, {text: "test from action"});
         }
         catch (error) {
             core.setFailed(error.message);
@@ -73,7 +78,6 @@ function run() {
     });
 }
 run();
-exports.default = "test";
 
 
 /***/ }),
