@@ -7,21 +7,19 @@ async function run(): Promise<void> {
     const hookUrl = core.getInput("mattermost-hook-url");
     const repoToken = core.getInput("repo-token");
     const headers = {Authorization: `Bearer ${repoToken}`};
-    core.debug(`HookUrl: ${hookUrl}`);
 
     const {payload} = github.context;
+    const compareUrlRaw = payload.repository?.compare_url;
 
-    if (payload !== undefined) {
-      const commitsUrl = payload.repository?.commits_url.replace(
-        "{/sha}",
-        "?per_page=3",
-      );
-      const compareUrlRaw = payload.repository?.compare_url;
+    const commitsUrl = payload.repository?.commits_url.replace(
+      "{/sha}",
+      "?per_page=2",
+    );
+    const {data: commits} = await axios.get<Array<any>>(commitsUrl, {
+      headers,
+    });
 
-      const {data: commits} = await axios.get<Array<any>>(commitsUrl, {
-        headers,
-      });
-
+    if (commits.length >= 2) {
       const compareUrl = compareUrlRaw
         .replace("{base}", commits[1].sha)
         .replace("{head}", commits[0].sha);
@@ -30,15 +28,19 @@ async function run(): Promise<void> {
         headers,
       });
 
-      core.debug(`Compare url: ${compareData.html_url}`);
-    }
+      if (Array.isArray(payload.pages)) {
+        const pagesUpdated = payload.pages.map(page => {
+          return `[${page.title}](${page.html_url}) was updated by ${page.sender.login}! see the [diff](${compareData.html_url})`;
+        });
 
-    // axios.post(hookUrl, {text: "test from action"});
+        axios.post(hookUrl, {
+          text: `The Wiki was updated :tada: \n${pagesUpdated.join("\n*")}`,
+        });
+      }
+    }
   } catch (error) {
     core.setFailed(error.message);
   }
 }
 
 run();
-
-export default "test";
