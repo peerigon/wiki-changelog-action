@@ -1,15 +1,24 @@
-import * as core from '@actions/core'
-import axios from 'axios'
+import * as core from "@actions/core";
+import * as github from "@actions/github";
+import axios from "axios";
 
 async function run(): Promise<void> {
   try {
-    const hookUrl = core.getInput('mattermost-hook-url')
-    core.debug(`HookUrl: ${hookUrl}`)
+    const hookUrl = core.getInput("mattermost-hook-url");
+    core.debug(`HookUrl: ${hookUrl}`);
 
-    axios.post(hookUrl, {text: 'test from action'})
+    const {payload} = github.context;
+
+    if (payload !== undefined) {
+      core.debug(`Payload: ${JSON.stringify(payload, null, 4)}`);
+    }
+
+    axios.post(hookUrl, {text: "test from action"});
   } catch (error) {
-    core.setFailed(error.message)
+    core.setFailed(error.message);
   }
 }
 
-run()
+run();
+
+export default "test";
