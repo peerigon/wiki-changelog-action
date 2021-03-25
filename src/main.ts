@@ -30,7 +30,7 @@ async function run(): Promise<void> {
 
       if (Array.isArray(payload.pages)) {
         const pagesUpdated = payload.pages.map(page => {
-          return `[${page.title}](${page.html_url}) was updated by ${page.sender.login}! see the [diff](${compareData.html_url})`;
+          return `[${page.title}](${page.html_url}) was updated by ${payload.sender?.login}! see the [diff](${compareData.html_url})`;
         });
 
         axios.post(hookUrl, {
