@@ -5,6 +5,7 @@ import axios from "axios";
 async function run(): Promise<void> {
   try {
     const hookUrl = core.getInput("mattermost-hook-url");
+    const repoToken = core.getInput("repo-token");
     core.debug(`HookUrl: ${hookUrl}`);
 
     const {payload} = github.context;
@@ -15,7 +16,9 @@ async function run(): Promise<void> {
       core.debug(`commits url ${commitsUrl}`);
 
       if (commitsUrl !== undefined) {
-        const commits = await axios.get(commitsUrl);
+        const commits = await axios.get(commitsUrl, {
+          headers: {authorization: `Bearer ${repoToken}`},
+        });
         core.debug(`commits: ${JSON.stringify(commits, null, 4)}`);
       }
     }
