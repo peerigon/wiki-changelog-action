@@ -51,7 +51,7 @@ function run() {
             const { payload } = github.context;
             if (payload !== undefined) {
                 core.debug(`Payload: ${JSON.stringify(payload, null, 4)}`);
-                const commitsUrl = (_a = payload.repository) === null || _a === void 0 ? void 0 : _a.commits_url;
+                const commitsUrl = (_a = payload.repository) === null || _a === void 0 ? void 0 : _a.commits_url.replace("{/sha}", "");
                 core.debug(`commits url ${commitsUrl}`);
                 if (commitsUrl !== undefined) {
                     const commits = yield axios_1.default.get(commitsUrl);
