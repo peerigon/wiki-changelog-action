@@ -1,0 +1,10 @@
+name: 'Your name here'
+description: 'Provide a description here'
+author: 'Peerigon'
+inputs:
+  mattermost-hook-url:
+    required: true
+    description: 'Mattermost hook url'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
