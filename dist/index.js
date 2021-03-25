@@ -64,7 +64,8 @@ function run() {
                 });
                 if (Array.isArray(payload.pages)) {
                     const pagesUpdated = payload.pages.map(page => {
-                        return `[${page.title}](${page.html_url}) was updated by ${page.sender.login}! see the [diff](${compareData.html_url})`;
+                        var _a;
+                        return `[${page.title}](${page.html_url}) was updated by ${(_a = payload.sender) === null || _a === void 0 ? void 0 : _a.login}! see the [diff](${compareData.html_url})`;
                     });
                     axios_1.default.post(hookUrl, {
                         text: `The Wiki was updated :tada: \n${pagesUpdated.join("\n*")}`,
