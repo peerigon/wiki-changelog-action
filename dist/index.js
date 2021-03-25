@@ -43,7 +43,7 @@ const core = __importStar(__webpack_require__(2186));
 const github = __importStar(__webpack_require__(5438));
 const axios_1 = __importDefault(__webpack_require__(6545));
 function run() {
-    var _a;
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const hookUrl = core.getInput("mattermost-hook-url");
@@ -51,15 +51,16 @@ function run() {
             core.debug(`HookUrl: ${hookUrl}`);
             const { payload } = github.context;
             if (payload !== undefined) {
-                core.debug(`Payload: ${JSON.stringify(payload, null, 4)}`);
                 const commitsUrl = (_a = payload.repository) === null || _a === void 0 ? void 0 : _a.commits_url.replace("{/sha}", "");
-                core.debug(`commits url ${commitsUrl}`);
-                if (commitsUrl !== undefined) {
-                    const { data } = yield axios_1.default.get(commitsUrl, {
-                        headers: { Authorization: `Bearer ${repoToken}` },
-                    });
-                    core.debug(`commits: ${JSON.stringify(data, null, 4)}`);
-                }
+                const compareUrlRaw = (_b = payload.repository) === null || _b === void 0 ? void 0 : _b.compare_url;
+                const { data: commits } = yield axios_1.default.get(commitsUrl, {
+                    headers: { Authorization: `Bearer ${repoToken}` },
+                });
+                const lastTwoCommits = commits.slice(0, 2);
+                const compareUrl = compareUrlRaw
+                    .replace("{base}", lastTwoCommits[0].sha)
+                    .replace("{head}", lastTwoCommits[1].sha);
+                core.debug(`Compare url: ${compareUrl}`);
             }
             // axios.post(hookUrl, {text: "test from action"});
         }
