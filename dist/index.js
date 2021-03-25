@@ -58,8 +58,8 @@ function run() {
                     headers,
                 });
                 const compareUrl = compareUrlRaw
-                    .replace("{base}", commits[0].sha)
-                    .replace("{head}", commits[2].sha);
+                    .replace("{base}", commits[1].sha)
+                    .replace("{head}", commits[0].sha);
                 const { data: compareData } = yield axios_1.default.get(compareUrl, {
                     headers,
                 });
