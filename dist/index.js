@@ -43,6 +43,7 @@ const core = __importStar(__webpack_require__(2186));
 const github = __importStar(__webpack_require__(5438));
 const axios_1 = __importDefault(__webpack_require__(6545));
 function run() {
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const hookUrl = core.getInput("mattermost-hook-url");
@@ -50,8 +51,14 @@ function run() {
             const { payload } = github.context;
             if (payload !== undefined) {
                 core.debug(`Payload: ${JSON.stringify(payload, null, 4)}`);
+                const commitsUrl = (_a = payload.repository) === null || _a === void 0 ? void 0 : _a.commits_url;
+                core.debug(`commits url ${commitsUrl}`);
+                if (commitsUrl !== undefined) {
+                    const commits = yield axios_1.default.get(commitsUrl);
+                    core.debug(`commits: ${JSON.stringify(commits, null, 4)}`);
+                }
             }
-            axios_1.default.post(hookUrl, { text: "test from action" });
+            // axios.post(hookUrl, {text: "test from action"});
         }
         catch (error) {
             core.setFailed(error.message);
