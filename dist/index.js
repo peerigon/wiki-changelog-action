@@ -46,34 +46,16 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const hookUrl = core.getInput("mattermost-hook-url");
-            // const repoToken = core.getInput("repo-token");
-            // const headers = {Authorization: `Bearer ${repoToken}`};
             const { payload } = github.context;
-            // const compareUrlRaw = payload.repository?.compare_url;
-            // const commitsUrl = payload.repository?.commits_url.replace(
-            //   "{/sha}",
-            //   "?per_page=2",
-            // );
-            // const {data: commits} = await axios.get<Array<any>>(commitsUrl, {
-            //   headers,
-            // });
-            // if (commits.length >= 2) {
-            //   const compareUrl = compareUrlRaw
-            //     .replace("{base}", commits[1].sha)
-            //     .replace("{head}", commits[0].sha);
-            //   const {data: compareData} = await axios.get(compareUrl, {
-            //     headers,
-            //   });
             if (Array.isArray(payload.pages)) {
                 const pagesUpdated = payload.pages.map(page => {
                     var _a, _b, _c;
                     return `[${page.title}](${page.html_url}) was updated by [${(_a = payload.sender) === null || _a === void 0 ? void 0 : _a.login}](${(_b = payload.sender) === null || _b === void 0 ? void 0 : _b.html_url})! ${(_c = page.summary) !== null && _c !== void 0 ? _c : ""}`;
                 });
                 axios_1.default.post(hookUrl, {
-                    text: `:tada: The Wiki was updated :tada: \n${pagesUpdated.join("\n*")}`,
+                    text: `:tada: The Wiki was updated :tada: \n* ${pagesUpdated.join("\n* ")}`,
                 });
             }
-            // }
         }
         catch (error) {
             core.setFailed(error.message);
