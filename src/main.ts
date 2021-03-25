@@ -11,9 +11,16 @@ async function run(): Promise<void> {
 
     if (payload !== undefined) {
       core.debug(`Payload: ${JSON.stringify(payload, null, 4)}`);
+      const commitsUrl = payload.repository?.commits_url;
+      core.debug(`commits url ${commitsUrl}`);
+
+      if (commitsUrl !== undefined) {
+        const commits = await axios.get(commitsUrl);
+        core.debug(`commits: ${JSON.stringify(commits, null, 4)}`);
+      }
     }
 
-    axios.post(hookUrl, {text: "test from action"});
+    // axios.post(hookUrl, {text: "test from action"});
   } catch (error) {
     core.setFailed(error.message);
   }
