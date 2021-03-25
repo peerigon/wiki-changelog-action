@@ -16,10 +16,10 @@ async function run(): Promise<void> {
       core.debug(`commits url ${commitsUrl}`);
 
       if (commitsUrl !== undefined) {
-        const commits = await axios.get(commitsUrl, {
+        const {data} = await axios.get<Array<any>>(commitsUrl, {
           headers: {Authorization: `Bearer ${repoToken}`},
         });
-        core.debug(`commits: ${JSON.stringify(commits, null, 4)}`);
+        core.debug(`commits: ${JSON.stringify(data, null, 4)}`);
       }
     }
 

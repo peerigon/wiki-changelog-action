@@ -55,10 +55,10 @@ function run() {
                 const commitsUrl = (_a = payload.repository) === null || _a === void 0 ? void 0 : _a.commits_url.replace("{/sha}", "");
                 core.debug(`commits url ${commitsUrl}`);
                 if (commitsUrl !== undefined) {
-                    const commits = yield axios_1.default.get(commitsUrl, {
+                    const { data } = yield axios_1.default.get(commitsUrl, {
                         headers: { Authorization: `Bearer ${repoToken}` },
                     });
-                    core.debug(`commits: ${JSON.stringify(commits, null, 4)}`);
+                    core.debug(`commits: ${JSON.stringify(data, null, 4)}`);
                 }
             }
             // axios.post(hookUrl, {text: "test from action"});
