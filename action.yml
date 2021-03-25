@@ -1,10 +1,13 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Peerigon'
+name: "Your name here"
+description: "Provide a description here"
+author: "Peerigon"
 inputs:
   mattermost-hook-url:
     required: true
-    description: 'Mattermost hook url'
+    description: "Mattermost hook url"
+  repo-token:
+    required: true
+    description: "Github Repo Token"
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: "node12"
+  main: "dist/index.js"
