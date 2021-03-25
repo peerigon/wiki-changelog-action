@@ -17,7 +17,7 @@ async function run(): Promise<void> {
 
       if (commitsUrl !== undefined) {
         const commits = await axios.get(commitsUrl, {
-          headers: {authorization: `Bearer ${repoToken}`},
+          headers: {Authorization: `Bearer ${repoToken}`},
         });
         core.debug(`commits: ${JSON.stringify(commits, null, 4)}`);
       }
