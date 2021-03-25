@@ -12,24 +12,25 @@ async function run(): Promise<void> {
     const {payload} = github.context;
 
     if (payload !== undefined) {
-      const commitsUrl = payload.repository?.commits_url.replace("{/sha}", "");
+      const commitsUrl = payload.repository?.commits_url.replace(
+        "{/sha}",
+        "?per_page=3",
+      );
       const compareUrlRaw = payload.repository?.compare_url;
 
       const {data: commits} = await axios.get<Array<any>>(commitsUrl, {
         headers,
       });
 
-      const lastTwoCommits = commits.slice(0, 2);
-
       const compareUrl = compareUrlRaw
-        .replace("{base}", lastTwoCommits[0].sha)
-        .replace("{head}", lastTwoCommits[1].sha);
+        .replace("{base}", commits[0].sha)
+        .replace("{head}", commits[2].sha);
 
       const {data: compareData} = await axios.get(compareUrl, {
         headers,
       });
 
-      core.debug(`Compare url: ${compareData.diff_url}`);
+      core.debug(`Compare url: ${compareData.html_url}`);
     }
 
     // axios.post(hookUrl, {text: "test from action"});

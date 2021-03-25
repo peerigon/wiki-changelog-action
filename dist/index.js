@@ -52,19 +52,18 @@ function run() {
             core.debug(`HookUrl: ${hookUrl}`);
             const { payload } = github.context;
             if (payload !== undefined) {
-                const commitsUrl = (_a = payload.repository) === null || _a === void 0 ? void 0 : _a.commits_url.replace("{/sha}", "");
+                const commitsUrl = (_a = payload.repository) === null || _a === void 0 ? void 0 : _a.commits_url.replace("{/sha}", "?per_page=3");
                 const compareUrlRaw = (_b = payload.repository) === null || _b === void 0 ? void 0 : _b.compare_url;
                 const { data: commits } = yield axios_1.default.get(commitsUrl, {
                     headers,
                 });
-                const lastTwoCommits = commits.slice(0, 2);
                 const compareUrl = compareUrlRaw
-                    .replace("{base}", lastTwoCommits[0].sha)
-                    .replace("{head}", lastTwoCommits[1].sha);
+                    .replace("{base}", commits[0].sha)
+                    .replace("{head}", commits[2].sha);
                 const { data: compareData } = yield axios_1.default.get(compareUrl, {
                     headers,
                 });
-                core.debug(`Compare url: ${compareData.diff_url}`);
+                core.debug(`Compare url: ${compareData.html_url}`);
             }
             // axios.post(hookUrl, {text: "test from action"});
         }
