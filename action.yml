@@ -5,6 +5,9 @@ inputs:
   mattermost-hook-url:
     required: true
     description: "Mattermost hook url"
+  repo-token:
+    required: true
+    description: "github repo token"
 
 runs:
   using: "node12"
