@@ -43,19 +43,40 @@ const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const axios_1 = __importDefault(__nccwpck_require__(6545));
 function run() {
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const hookUrl = core.getInput("mattermost-hook-url");
+            const repoToken = core.getInput("repo-token");
+            const headers = { Authorization: `Bearer ${repoToken}` };
             const { payload } = github.context;
+            const compareUrlRaw = (_a = payload.repository) === null || _a === void 0 ? void 0 : _a.compare_url.replace(payload.repository.name, `${payload.repository.name}.wiki`);
+            const commitsUrl = (_b = payload.repository) === null || _b === void 0 ? void 0 : _b.commits_url.replace(payload.repository.name, `${payload.repository.name}.wiki`).replace("{/sha}", "?per_page=2");
+            const { data: commits } = yield axios_1.default.get(commitsUrl, {
+                headers,
+            });
+            core.debug(`Commits URL: ${commitsUrl}`);
+            core.debug(`Commits: \n${commits.join("\n ")}`);
+            if (commits.length >= 2) {
+                const compareUrl = compareUrlRaw
+                    .replace("{base}", commits[1].sha)
+                    .replace("{head}", commits[0].sha);
+                const { data: compareData } = yield axios_1.default.get(compareUrl, {
+                    headers,
+                });
+                core.debug(`compareUrl: ${commitsUrl}`);
+                core.debug(`compareData: ${compareData.html_url}`);
+            }
             if (Array.isArray(payload.pages)) {
                 const pagesUpdated = payload.pages.map(page => {
                     var _a, _b, _c;
                     return `[${page.title}](${page.html_url}) was updated by [${(_a = payload.sender) === null || _a === void 0 ? void 0 : _a.login}](${(_b = payload.sender) === null || _b === void 0 ? void 0 : _b.html_url})! ${(_c = page.summary) !== null && _c !== void 0 ? _c : ""}`;
                 });
                 axios_1.default.post(hookUrl, {
-                    text: `:tada: The Wiki was updated :tada: \n* ${pagesUpdated.join("\n* ")}`,
+                    text: `:tada: The Wiki was updated :tada: \n${pagesUpdated.join("\n*")}`,
                 });
             }
+            // }
         }
         catch (error) {
             core.setFailed(error.message);
