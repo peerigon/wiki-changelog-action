@@ -4,16 +4,16 @@ import axios from "axios";
 
 async function run(): Promise<void> {
   core.debug("start of action");
+  core.debug(`commit that triggered the action: ${github.context.sha}`);
 
   try {
     const hookUrl = core.getInput("mattermost-hook-url");
     const repoToken = core.getInput("repo-token");
 
     const octokit = github.getOctokit(repoToken);
-    const test = await octokit.rest.repos.getCommit({
-      owner: github.context.payload.sender?.login,
-      ref: github.context.sha,
-      repo: github.context.payload.repository?.name ?? "",
+    const test = await octokit.rest.repos.listCommits({
+      owner: "peerigon",
+      repo: "Organization",
     });
 
     core.debug(JSON.stringify(test, null, 2));
@@ -21,7 +21,6 @@ async function run(): Promise<void> {
     const headers = {Authorization: `Bearer ${repoToken}`};
 
     const {payload} = github.context;
-    core.debug(`commit that triggered the action: ${github.context.sha}`);
 
     const compareUrlRaw = payload.repository?.compare_url.replace(
       payload.repository.name,
