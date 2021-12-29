@@ -50,10 +50,9 @@ function run() {
             if (Array.isArray(payload.pages)) {
                 core.debug(`page compare url: ${payload.pages[0].html_url}/_compare/${payload.pages[0].sha}`);
                 const pagesUpdated = payload.pages.map(page => {
-                    var _a, _b, _c;
+                    var _a, _b;
                     const diffUrl = `${page.html_url}/_compare/${page.sha}`;
-                    return `[${page.title}](${page.html_url}) was updated by [${(_a = payload.sender) === null || _a === void 0 ? void 0 : _a.login}](${(_b = payload.sender) === null || _b === void 0 ? void 0 : _b.html_url})! Look at the diff [here](${diffUrl})\n
-        ${(_c = page.summary) !== null && _c !== void 0 ? _c : ""}`;
+                    return `[${page.title}](${page.html_url}) was updated by [${(_a = payload.sender) === null || _a === void 0 ? void 0 : _a.login}](${(_b = payload.sender) === null || _b === void 0 ? void 0 : _b.html_url})! Look at the diff [here](${diffUrl})`;
                 });
                 axios_1.default.post(hookUrl, {
                     text: `:tada: The Wiki was updated :tada: \n
