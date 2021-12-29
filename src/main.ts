@@ -16,10 +16,7 @@ async function run(): Promise<void> {
       const pagesUpdated = payload.pages.map(page => {
         const diffUrl = `${page.html_url}/_compare/${page.sha}`;
 
-        return `[${page.title}](${page.html_url}) was updated by [${
-          payload.sender?.login
-        }](${payload.sender?.html_url})! Look at the diff [here](${diffUrl})\n
-        ${page.summary ?? ""}`;
+        return `[${page.title}](${page.html_url}) was updated by [${payload.sender?.login}](${payload.sender?.html_url})! Look at the diff [here](${diffUrl})`;
       });
 
       axios.post(hookUrl, {
