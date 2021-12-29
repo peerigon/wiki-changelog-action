@@ -42,19 +42,29 @@ const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const axios_1 = __importDefault(__nccwpck_require__(6545));
 function run() {
-    var _a, _b;
+    var _a, _b, _c, _d, _e;
     return __awaiter(this, void 0, void 0, function* () {
+        core.debug("start of action");
         try {
             const hookUrl = core.getInput("mattermost-hook-url");
             const repoToken = core.getInput("repo-token");
+            const octokit = github.getOctokit(repoToken);
+            const test = yield octokit.rest.repos.getCommit({
+                owner: (_a = github.context.payload.sender) === null || _a === void 0 ? void 0 : _a.login,
+                ref: github.context.sha,
+                repo: (_c = (_b = github.context.payload.repository) === null || _b === void 0 ? void 0 : _b.name) !== null && _c !== void 0 ? _c : "",
+            });
+            core.debug(JSON.stringify(test, null, 2));
             const headers = { Authorization: `Bearer ${repoToken}` };
             const { payload } = github.context;
-            const compareUrlRaw = (_a = payload.repository) === null || _a === void 0 ? void 0 : _a.compare_url.replace(payload.repository.name, `${payload.repository.name}.wiki`);
-            const commitsUrl = (_b = payload.repository) === null || _b === void 0 ? void 0 : _b.commits_url.replace(payload.repository.name, `${payload.repository.name}.wiki`).replace("{/sha}", "?per_page=2");
+            core.debug(`commit that triggered the action: ${github.context.sha}`);
+            const compareUrlRaw = (_d = payload.repository) === null || _d === void 0 ? void 0 : _d.compare_url.replace(payload.repository.name, `${payload.repository.name}.wiki`);
+            core.debug(`compare url raw: ${compareUrlRaw}`);
+            const commitsUrl = (_e = payload.repository) === null || _e === void 0 ? void 0 : _e.commits_url.replace(payload.repository.name, `${payload.repository.name}.wiki`).replace("{/sha}", "?per_page=2");
+            core.debug(`Commits URL: ${commitsUrl}`);
             const { data: commits } = yield axios_1.default.get(commitsUrl, {
                 headers,
             });
-            core.debug(`Commits URL: ${commitsUrl}`);
             core.debug(`Commits: \n${commits.join("\n ")}`);
             if (commits.length >= 2) {
                 const compareUrl = compareUrlRaw
