@@ -55,8 +55,7 @@ function run() {
                     return `[${page.title}](${page.html_url}) was updated by [${(_a = payload.sender) === null || _a === void 0 ? void 0 : _a.login}](${(_b = payload.sender) === null || _b === void 0 ? void 0 : _b.html_url})! Look at the diff [here](${diffUrl})`;
                 });
                 axios_1.default.post(hookUrl, {
-                    text: `:tada: The Wiki was updated :tada: \n
-        ${pagesUpdated.join("\n*")}`,
+                    text: `:tada: The Wiki was updated :tada: \n${pagesUpdated.join("\n*")}`,
                 });
             }
         }

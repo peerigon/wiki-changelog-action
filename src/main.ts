@@ -20,8 +20,9 @@ async function run(): Promise<void> {
       });
 
       axios.post(hookUrl, {
-        text: `:tada: The Wiki was updated :tada: \n
-        ${pagesUpdated.join("\n*")}`,
+        text: `:tada: The Wiki was updated :tada: \n${pagesUpdated.join(
+          "\n*",
+        )}`,
       });
     }
   } catch (error) {
