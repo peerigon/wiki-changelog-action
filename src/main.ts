@@ -17,9 +17,11 @@ async function run(): Promise<void> {
     const commitsUrl = payload.repository?.commits_url
       .replace(payload.repository.name, `${payload.repository.name}.wiki`)
       .replace("{/sha}", "?per_page=2");
+
     const {data: commits} = await axios.get<Array<any>>(commitsUrl, {
       headers,
     });
+
     core.debug(`Commits URL: ${commitsUrl}`);
     core.debug(`Commits: \n${commits.join("\n ")}`);
 
@@ -31,6 +33,7 @@ async function run(): Promise<void> {
       const {data: compareData} = await axios.get(compareUrl, {
         headers,
       });
+
       core.debug(`compareUrl: ${commitsUrl}`);
       core.debug(`compareData: ${compareData.html_url}`);
     }
@@ -48,9 +51,8 @@ async function run(): Promise<void> {
         )}`,
       });
     }
-    // }
   } catch (error) {
-    core.setFailed(error.message);
+    core.setFailed((error as Error).message);
   }
 }
 
