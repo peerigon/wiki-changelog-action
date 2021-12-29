@@ -42,21 +42,23 @@ const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const axios_1 = __importDefault(__nccwpck_require__(6545));
 function run() {
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         core.debug("start of action");
         core.debug(`commit that triggered the action: ${github.context.sha}`);
         try {
             const hookUrl = core.getInput("mattermost-hook-url");
-            const repoToken = core.getInput("repo-token");
-            const octokit = github.getOctokit(repoToken);
-            const { data: commits } = yield octokit.rest.repos.listCommits({
-                owner: "peerigon",
-                repo: "Organization.wiki",
-                per_page: 2,
-            });
-            core.debug(JSON.stringify(commits, null, 2));
+            // const repoToken = core.getInput("repo-token");
+            // const octokit = github.getOctokit(repoToken);
+            // const {data: commits} = await octokit.rest.repos.listCommits({
+            //   owner: "peerigon",
+            //   repo: "Organization.wiki",
+            //   per_page: 2,
+            // });
+            // core.debug(JSON.stringify(commits, null, 2));
             // const headers = {Aguthorization: `Bearer ${repoToken}`};
             const { payload } = github.context;
+            core.debug(`compare url: ${(_a = payload.repository) === null || _a === void 0 ? void 0 : _a.compare_url.replace("{base}", "HEAD^").replace("{head}", "HEAD")}`);
             // if (commits.length >= 2) {
             //   const compareUrl = compareUrlRaw
             //     .replace("{base}", commits[1].sha)
@@ -68,6 +70,7 @@ function run() {
             //   core.debug(`compareData: ${compareData.html_url}`);
             // }
             if (Array.isArray(payload.pages)) {
+                core.debug(`page compare url: ${payload.pages[0].html_url}/_compare/${payload.pages[0].sha}`);
                 const pagesUpdated = payload.pages.map(page => {
                     var _a, _b, _c;
                     return `[${page.title}](${page.html_url}) was updated by [${(_a = payload.sender) === null || _a === void 0 ? void 0 : _a.login}](${(_b = payload.sender) === null || _b === void 0 ? void 0 : _b.html_url})! ${(_c = page.summary) !== null && _c !== void 0 ? _c : ""}`;

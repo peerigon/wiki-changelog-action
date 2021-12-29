@@ -8,20 +8,26 @@ async function run(): Promise<void> {
 
   try {
     const hookUrl = core.getInput("mattermost-hook-url");
-    const repoToken = core.getInput("repo-token");
+    // const repoToken = core.getInput("repo-token");
 
-    const octokit = github.getOctokit(repoToken);
-    const {data: commits} = await octokit.rest.repos.listCommits({
-      owner: "peerigon",
-      repo: "Organization.wiki",
-      per_page: 2,
-    });
+    // const octokit = github.getOctokit(repoToken);
+    // const {data: commits} = await octokit.rest.repos.listCommits({
+    //   owner: "peerigon",
+    //   repo: "Organization.wiki",
+    //   per_page: 2,
+    // });
 
-    core.debug(JSON.stringify(commits, null, 2));
+    // core.debug(JSON.stringify(commits, null, 2));
 
     // const headers = {Aguthorization: `Bearer ${repoToken}`};
 
     const {payload} = github.context;
+
+    core.debug(
+      `compare url: ${payload.repository?.compare_url
+        .replace("{base}", "HEAD^")
+        .replace("{head}", "HEAD")}`,
+    );
 
     // if (commits.length >= 2) {
     //   const compareUrl = compareUrlRaw
@@ -37,6 +43,9 @@ async function run(): Promise<void> {
     // }
 
     if (Array.isArray(payload.pages)) {
+      core.debug(
+        `page compare url: ${payload.pages[0].html_url}/_compare/${payload.pages[0].sha}`,
+      );
       const pagesUpdated = payload.pages.map(page => {
         return `[${page.title}](${page.html_url}) was updated by [${
           payload.sender?.login
