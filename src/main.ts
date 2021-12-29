@@ -11,47 +11,30 @@ async function run(): Promise<void> {
     const repoToken = core.getInput("repo-token");
 
     const octokit = github.getOctokit(repoToken);
-    const test = await octokit.rest.repos.listCommits({
+    const {data: commits} = await octokit.rest.repos.listCommits({
       owner: "peerigon",
-      repo: "Organization",
+      repo: "Organization.wiki",
+      per_page: 2,
     });
 
-    core.debug(JSON.stringify(test, null, 2));
+    core.debug(JSON.stringify(commits, null, 2));
 
-    const headers = {Authorization: `Bearer ${repoToken}`};
+    // const headers = {Aguthorization: `Bearer ${repoToken}`};
 
     const {payload} = github.context;
 
-    const compareUrlRaw = payload.repository?.compare_url.replace(
-      payload.repository.name,
-      `${payload.repository.name}.wiki`,
-    );
-    core.debug(`compare url raw: ${compareUrlRaw}`);
+    // if (commits.length >= 2) {
+    //   const compareUrl = compareUrlRaw
+    //     .replace("{base}", commits[1].sha)
+    //     .replace("{head}", commits[0].sha);
 
-    const commitsUrl = payload.repository?.commits_url
-      .replace(payload.repository.name, `${payload.repository.name}.wiki`)
-      .replace("{/sha}", "?per_page=2");
+    //   const {data: compareData} = await axios.get(compareUrl, {
+    //     headers,
+    //   });
 
-    core.debug(`Commits URL: ${commitsUrl}`);
-
-    const {data: commits} = await axios.get<Array<any>>(commitsUrl, {
-      headers,
-    });
-
-    core.debug(`Commits: \n${commits.join("\n ")}`);
-
-    if (commits.length >= 2) {
-      const compareUrl = compareUrlRaw
-        .replace("{base}", commits[1].sha)
-        .replace("{head}", commits[0].sha);
-
-      const {data: compareData} = await axios.get(compareUrl, {
-        headers,
-      });
-
-      core.debug(`compareUrl: ${commitsUrl}`);
-      core.debug(`compareData: ${compareData.html_url}`);
-    }
+    //   core.debug(`compareUrl: ${commitsUrl}`);
+    //   core.debug(`compareData: ${compareData.html_url}`);
+    // }
 
     if (Array.isArray(payload.pages)) {
       const pagesUpdated = payload.pages.map(page => {
